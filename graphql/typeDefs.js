@@ -10,7 +10,7 @@ export const typeDefs = gql`
 
   type Mutation {
     addMasterProduct(data: MasterProductCreateInput!): MasterProduct
-    addStockProduct(data: StockProductCreateInput!): StockProduct
+    addStockProduct(data: StockProductCreateInput!): [StockProduct]
   }
 
   type MasterProduct {
@@ -23,19 +23,19 @@ export const typeDefs = gql`
     typeOfSinglePackagingUnit: String
     safetyStock: Int
     createdAt: String!
-    editedAt: String!
+    updatedAt: String!
     stock: [StockProduct]!
   }
 
   type StockProduct {
     _id: ID!
     masterData: MasterProduct
-    quantity: Int!
+    quantity: Int
     typeOfQuantMeasurment: String!
     percentOfStockLeft: Int!
     expiryDate: String
     createdAt: String!
-    editedAt: String!
+    updatedAt: String!
     customId: ID
   }
 
@@ -52,9 +52,9 @@ export const typeDefs = gql`
 
   input StockProductCreateInput {
     name: String!
-    quantity: Int!
+    quantity: Int 
     typeOfQuantMeasurment: String!
-    masterProductId: ID
+    masterProductId: ID  @deprecated ## not decided if will be used
     customId: ID
   }
 
