@@ -8,6 +8,7 @@ import dotenv from 'dotenv'
 import resolvers from './graphql/resolvers.js'
 
 import mongoose from 'mongoose'
+import { MasterProduct } from './models/MasterProduct.js';
 
 dotenv.config({ path: '.env' })
   // console.log(data)
@@ -26,7 +27,8 @@ const initServer = async () => {
     resolvers,
     context: (req) => {
       return {
-        ...req
+        ...req,
+        MasterProduct
       }
     }
   });
