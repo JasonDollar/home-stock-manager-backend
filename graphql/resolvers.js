@@ -1,28 +1,33 @@
-import { v4 as id } from 'uuid'
-import data from '../data.js'
-import { addTimestamp } from '../lib/timestamps.js';
 
 const resolvers = {
   Query: {
-    masterProductsList: () => data.masterProducts,
-    stockProductsList: () => data.stockProducts,
-    singleMasterProduct: (parent, { id }) => {
-      const masterProd = data.masterProducts.find(item => item._id === id)
+    masterProductsList: async (parent, args, ctx) => {
+      const { MasterProduct } = ctx
+      return await MasterProduct.find()
+    },
+    stockProductsList:  async (parent, args, ctx) => {
+      const { StockProduct } = ctx
+      return await StockProduct.find()
+    },
+    singleMasterProduct: async (parent, { id }, { MasterProduct }) => {
+      const masterProd = await MasterProduct.findOne({ _id: id })
+      // console.log(masterProd)
       if (!masterProd) return null
 
       return masterProd
     },
-    singleStockProduct: (parent, { id }) => {
-      const stockProd = data.stockProducts.find(item => item._id === id)
+    singleStockProduct: async (parent, { id }, { StockProduct }) => {
+      const stockProd = await StockProduct.findOne({ _id: id })
       if (!stockProd) return null
 
       return stockProd
     },
   },
   Mutation: {
-    addMasterProduct: (parent, args, ctx) => {
-      // console.log(parent)
-      const {name, 
+    addMasterProduct: async (parent, args, { MasterProduct }) => {
+
+      const {
+        name, 
         description, 
         manufacturer, 
         weightOfSinglePackagingUnit, 
@@ -30,61 +35,73 @@ const resolvers = {
         safetyStock 
       } = args.data
 
-      const newMasterProduct = addTimestamp({
-        _id: id(),
+      const alreadyExists = MasterProduct.find({ name })
+      if (alreadyExists) return null
+
+      const newMasterProduct = new MasterProduct({
         name, 
         description, 
         manufacturer, 
         weightOfSinglePackagingUnit, 
         typeOfSinglePackagingUnit, 
-        safetyStock,
+        safetyStock 
       })
-
-      data.masterProducts.push(newMasterProduct)
+      await newMasterProduct.save()
 
       return newMasterProduct
     },
-    addStockProduct: (parent, args, ctx) => {
-      // console.log(args)
+    addStockProduct: async (parent, args, { StockProduct, MasterProduct }) => {
+
       const { masterProductId, name, quantity, typeOfQuantMeasurment, customId } = args.data
-      let newMasterProductId
-      if (!masterProductId) {
-        const masterProdExists = data.masterProducts.find(item => item.name?.toLocaleLowerCase() === name?.toLocaleLowerCase())
-        newMasterProductId = masterProdExists._id
 
-        if (!masterProdExists) {
-          newMasterProductId = id()
-  
-          data.masterProducts.push(addTimestamp({_id: newMasterProductId, name}))
+      let masterProd = await MasterProduct.findOne({ name })
+
+      if (!masterProd) {
+        masterProd = new MasterProduct({ name })
+      } 
+
+      const newStockProds = []
+      if (typeOfQuantMeasurment === 'unit') {
+        for (let i = 0; i < quantity; i++) {
+          const newStockProduct = new StockProduct({
+            masterData: masterProd._id,
+            name,
+            quantity,
+            typeOfQuantMeasurment,
+            percentOfStockLeft: 100,
+            customId
+          })
+          const savedItem = await newStockProduct.save()
+          newStockProds.push(savedItem)
         }
+      } else {
+        const newStockProduct = new StockProduct({
+          masterData: masterProd._id,
+          name,
+          quantity,
+          typeOfQuantMeasurment,
+          percentOfStockLeft: 100,
+          customId
+        })
+        const savedItem = await newStockProduct.save()
+        newStockProds.push(savedItem)
       }
+      
+      masterProd.stock = newStockProds.map(item => item._id)
+      await masterProd.save()
 
-      const newStockProduct = addTimestamp({
-        _id: id(),
-        masterData: newMasterProductId,
-        name,
-        quantity,
-        typeOfQuantMeasurment,
-        percentOfStockLeft: 100,
-        customId
-      })
-
-      data.stockProducts.push(newStockProduct)
-
-      return newStockProduct
+      return newStockProds
     },
   },
   StockProduct: {
-    masterData: (parent) => {
-      const finding = data.masterProducts.find(item => parent.masterData === item._id)
-      // console.log(parent, finding)
+    masterData: async (parent, args, { MasterProduct }) => {
+      const finding = await MasterProduct.findOne({ _id: parent.masterData })
       return finding
     }
   },
   MasterProduct: {
-    stock: (parent) => {
-      const findings = data.stockProducts.filter(item => item.masterData === parent._id)
-
+    stock: async (parent, args, { StockProduct }) => {
+      const findings = await StockProduct.find({ _id: { $in: parent.stock } })
       return findings
     }
   },
