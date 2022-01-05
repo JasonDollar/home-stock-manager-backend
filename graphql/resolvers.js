@@ -1,3 +1,4 @@
+import { ADD_MVT } from "../lib/constants.js";
 
 const resolvers = {
   Query: {
@@ -90,7 +91,7 @@ const resolvers = {
       }
 
       const newMovement = new Movement({
-        mvementType: 'ADD',
+        mvementType: ADD_MVT,
         typeOfQuantMeasurment,
         quantity,
         masterData: masterProd._id
