@@ -8,6 +8,10 @@ const MasterProduct = {
   stock: async (parent, args, { StockProduct }) => {
     const findings = await StockProduct.find({ _id: { $in: parent.stock } })
     return findings
+  },
+  movements: async (parent, args, { Movement }) => {
+    const findings = await Movement.find({ masterData: parent._id })
+    return findings
   }
 }
 const Movement = {

@@ -25,6 +25,7 @@ export const typeDefs = gql`
     createdAt: String!
     updatedAt: String!
     stock: [StockProduct]!
+    movements: [Movement]!
   }
 
   type StockProduct {
@@ -47,10 +48,9 @@ export const typeDefs = gql`
     _id: ID!
     mvementType: MovementTypeEnum!
     typeOfQuantMeasurment: String
-    quantity: Int
+    quantity: Int!
     masterData: MasterProduct
     createdAt: String!
-    updatedAt: String!
   }
 
   input MasterProductCreateInput {
