@@ -45,7 +45,7 @@ export const typeDefs = gql`
 
   type Movement {
     _id: ID!
-    mvementType: MovementTypesEnum!
+    mvementType: MovementTypeEnum!
     typeOfQuantMeasurment: String
     quantity: Int
     masterData: MasterProduct

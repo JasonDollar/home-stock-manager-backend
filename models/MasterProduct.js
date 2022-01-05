@@ -6,6 +6,7 @@ const masterProductSchema = new Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   description: String,
   manufacturer: String,

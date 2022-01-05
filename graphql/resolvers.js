@@ -52,7 +52,7 @@ const resolvers = {
 
       return newMasterProduct
     },
-    addStockProduct: async (parent, args, { StockProduct, MasterProduct }) => {
+    addStockProduct: async (parent, args, { StockProduct, MasterProduct, Movement }) => {
 
       const { masterProductId, name, quantity, typeOfQuantMeasurment, customId } = args.data
 
@@ -88,9 +88,17 @@ const resolvers = {
         const savedItem = await newStockProduct.save()
         newStockProds.push(savedItem)
       }
+
+      const newMovement = new Movement({
+        mvementType: 'ADD',
+        typeOfQuantMeasurment,
+        quantity,
+        masterData: masterProd._id
+      })
       
       masterProd.stock = newStockProds.map(item => item._id)
       await masterProd.save()
+      await newMovement.save()
 
       return newStockProds
     },

@@ -15,9 +15,11 @@ const movementSchema = new Schema({
   masterData: {
     type: Schema.Types.ObjectId,
     ref: 'MasterProduct'
+  },
+  createdAt: {
+    type: Date,
+    default: new Date()
   }
-}, {
-  timestamps: true,
 })
 
 const Movement = model('Movement', movementSchema)
