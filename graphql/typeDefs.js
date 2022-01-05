@@ -39,7 +39,19 @@ export const typeDefs = gql`
     customId: ID
   }
 
+  enum MovementTypeEnum {
+    ADD
+  }
 
+  type Movement {
+    _id: ID!
+    mvementType: MovementTypesEnum!
+    typeOfQuantMeasurment: String
+    quantity: Int
+    masterData: MasterProduct
+    createdAt: String!
+    updatedAt: String!
+  }
 
   input MasterProductCreateInput {
     name: String!

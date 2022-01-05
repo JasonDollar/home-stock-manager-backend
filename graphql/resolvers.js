@@ -18,6 +18,8 @@ const resolvers = {
     },
     singleStockProduct: async (parent, { id }, { StockProduct }) => {
       const stockProd = await StockProduct.findOne({ _id: id })
+      // ex. below: second object -> quantity field won't be selected
+      // const stockProd = await StockProduct.findOne({ _id: id }, { quantity: 0 })
       if (!stockProd) return null
 
       return stockProd
@@ -103,6 +105,12 @@ const resolvers = {
     stock: async (parent, args, { StockProduct }) => {
       const findings = await StockProduct.find({ _id: { $in: parent.stock } })
       return findings
+    }
+  },
+  Movement: {
+    masterData: async (parent, args, { MasterProduct }) => {
+      const finding = await MasterProduct.findOne({ _id: parent.masterData })
+      return finding
     }
   },
 };
