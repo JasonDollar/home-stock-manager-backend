@@ -1,11 +1,12 @@
 import mongoose from 'mongoose'
+import { mvementTypeEnum } from '../lib/constants.js'
 
 const { Schema, model } = mongoose
 
 const movementSchema = new Schema({
   mvementType: {
     type: String,
-    enum: ['ADD']
+    enum: mvementTypeEnum
   },
   typeOfQuantMeasurment: {
     type: String,

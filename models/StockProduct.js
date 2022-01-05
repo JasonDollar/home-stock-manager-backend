@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { typeOfQuantMeasurmentEnum } from '../lib/constants.js'
 
 const { Schema, model } = mongoose
 
@@ -7,7 +8,7 @@ const stockProductSchema = new Schema({
   typeOfQuantMeasurment: {
     type: String,
     default: 'unit',
-    enum: ['unit', 'g', 'kg']
+    enum: typeOfQuantMeasurmentEnum
   },
   percentOfStockLeft: {
     type: Number,
